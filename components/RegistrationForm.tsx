@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import type { NewUser } from '../types';
 
@@ -13,6 +14,35 @@ const initialFormData: NewUser = {
   email: '',
   ci: '',
 };
+
+// Se movió InputField fuera de RegistrationForm para evitar que se vuelva a crear en cada renderizado,
+// lo que provocaba que los campos de entrada perdieran el foco.
+const InputField: React.FC<{
+  name: keyof NewUser;
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  error?: string;
+}> = ({ name, label, value, onChange, type = 'text', error }) => (
+  <div>
+    <label htmlFor={name} className="block text-sm font-medium text-gray-700">
+      {label}
+    </label>
+    <input
+      type={type}
+      id={name}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className={`mt-1 block w-full px-3 py-2 bg-white border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
+      aria-invalid={!!error}
+      aria-describedby={error ? `${name}-error` : undefined}
+    />
+    {error && <p id={`${name}-error`} className="mt-1 text-xs text-red-500">{error}</p>}
+  </div>
+);
+
 
 const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, isSubmitting }) => {
   const [formData, setFormData] = useState<NewUser>(initialFormData);
@@ -48,34 +78,48 @@ const RegistrationForm: React.FC<RegistrationFormProps> = ({ onSubmit, isSubmitt
     }
   };
   
-  const InputField: React.FC<{ name: keyof NewUser; label: string; type?: string; error?: string }> = ({ name, label, type = 'text', error }) => (
-    <div>
-      <label htmlFor={name} className="block text-sm font-medium text-gray-700">
-        {label}
-      </label>
-      <input
-        type={type}
-        id={name}
-        name={name}
-        value={formData[name]}
-        onChange={handleChange}
-        className={`mt-1 block w-full px-3 py-2 bg-white border ${error ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm`}
-      />
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
-    </div>
-  );
-
   return (
     <div className="bg-white p-8 rounded-lg shadow-md w-full">
       <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Formulario de Actualización</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <InputField name="firstName" label="Nombre" error={errors.firstName} />
-            <InputField name="paternalLastName" label="Apellido Paterno" error={errors.paternalLastName} />
+            <InputField 
+              name="firstName" 
+              label="Nombre" 
+              value={formData.firstName}
+              onChange={handleChange}
+              error={errors.firstName} 
+            />
+            <InputField 
+              name="paternalLastName" 
+              label="Apellido Paterno" 
+              value={formData.paternalLastName}
+              onChange={handleChange}
+              error={errors.paternalLastName} 
+            />
         </div>
-        <InputField name="maternalLastName" label="Apellido Materno" error={errors.maternalLastName} />
-        <InputField name="email" label="Correo Electrónico" type="email" error={errors.email} />
-        <InputField name="ci" label="CI (Cédula de Identidad)" error={errors.ci} />
+        <InputField 
+          name="maternalLastName" 
+          label="Apellido Materno" 
+          value={formData.maternalLastName}
+          onChange={handleChange}
+          error={errors.maternalLastName} 
+        />
+        <InputField 
+          name="email" 
+          label="Correo Electrónico" 
+          type="email" 
+          value={formData.email}
+          onChange={handleChange}
+          error={errors.email} 
+        />
+        <InputField 
+          name="ci" 
+          label="CI (Cédula de Identidad)" 
+          value={formData.ci}
+          onChange={handleChange}
+          error={errors.ci} 
+        />
         
         <div>
           <button
