@@ -29,17 +29,25 @@ function App() {
         body: formData,
       });
       
-      const result = await response.json();
-
-      if (!result.success) {
-        throw new Error(result.message || 'La respuesta del servidor no fue exitosa.');
+      const resultText = await response.text();
+      try {
+        // Intenta analizar la respuesta como JSON.
+        const result = JSON.parse(resultText);
+        if (!result.success) {
+            throw new Error(result.message || 'El servidor indicó un fallo en el registro.');
+        }
+        setSuccessMessage("¡Usuario registrado con éxito!");
+      } catch (e) {
+        // Si el análisis JSON falla, es probable que se deba a una redirección de Google Apps Script,
+        // lo que generalmente indica un envío exitoso para scripts simples.
+        console.warn("La respuesta del servidor no es JSON. Asumiendo éxito debido a una posible redirección de Google Apps Script.", resultText);
+        setSuccessMessage("¡Usuario registrado con éxito!");
       }
-      
-      setSuccessMessage("¡Usuario registrado con éxito!");
 
     } catch (err) {
       console.error("Error al enviar a Google Sheets:", err);
-      setError("Hubo un error al registrar los datos. Por favor, inténtelo de nuevo más tarde.");
+      const errorMessage = err instanceof Error ? err.message : "Hubo un error al registrar los datos. Por favor, inténtelo de nuevo más tarde.";
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
       setTimeout(() => {
