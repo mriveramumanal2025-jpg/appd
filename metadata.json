@@ -1,0 +1,5 @@
+{
+  "name": "Formulario de Registro de Usuarios",
+  "description": "Una aplicación para registrar usuarios. Permite ingresar nombre, apellidos, correo electrónico y CI para la actualización de datos.",
+  "requestFramePermissions": []
+}
